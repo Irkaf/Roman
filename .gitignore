@@ -1,0 +1,69 @@
+package com.yandex.mapkitdemo;
+
+import android.os.Bundle;
+import android.app.Activity;
+
+import com.yandex.mapkit.Animation;
+import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.geometry.Point;
+import com.yandex.mapkit.map.CameraPosition;
+
+import com.yandex.mapkit.mapview.MapView;
+
+/**
+* This example shows a map and moves the camera to the specified point. 
+* Be sure to request the necessary permissions. 
+*/
+public class MapActivity extends Activity {
+     /**
+     * Substitute "your_api_key" with a valid API key.
+     *  You can get the key at https://developer.tech.yandex.ru/
+     */
+    private final String MAPKIT_API_KEY = "your_api_key";
+    private final Point TARGET_LOCATION = new Point(59.945933, 30.320045);
+
+    private MapView mapView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        /**
+        * Set the API key before you initialize MapKitFactory.
+        * We recommend setting the key in the Application.onCreate() method,
+        * but in this example, it is set in Activity.
+        */
+        MapKitFactory.setApiKey(MAPKIT_API_KEY);
+        /**
+        * Initializes the library to load the required native libraries.
+        * We recommend initializing the MapKit library in the Activity.onCreate() method.         
+        * Initializing it in the Application.onCreate() method may lead to unnecessary calls 
+        * and increased battery usage.
+        */
+        MapKitFactory.initialize(this);
+        // Creating a MapView.
+        setContentView(R.layout.map);
+        super.onCreate(savedInstanceState);
+        mapView = (MapView)findViewById(R.id.mapview);
+
+        // Moving the camera to the center of Saint Petersburg.
+        mapView.getMap().move(
+                new CameraPosition(TARGET_LOCATION, 14.0f, 0.0f, 0.0f),
+                new Animation(Animation.Type.SMOOTH, 5),
+                null);
+    }
+
+    @Override
+    protected void onStop() {
+        // Make sure to pass the calls of the onStop method to the MapView and MapKit instances.
+        mapView.onStop();
+        MapKitFactory.getInstance().onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onStart() {
+        // Make sure to pass the calls of the onStart method to the MapView and MapKit instances.
+        super.onStart();
+        MapKitFactory.getInstance().onStart();
+        mapView.onStart();
+    }
+}
